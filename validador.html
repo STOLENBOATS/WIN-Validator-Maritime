@@ -1,27 +1,27 @@
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Validador de WIN</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Validador WIN</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Validador de WIN</h1>
+    <h1>Validador WIN</h1>
     <nav>
       <a href="historico.html">Histórico</a>
-      <a href="login.html">Terminar Sessão</a>
+      <a href="perfil.html">Perfil</a>
     </nav>
   </header>
-  <main class="validador-container">
-    <h2>Validação de Número de Casco (WIN)</h2>
-    <form id="winForm" class="styled-form">
-      <input type="text" id="winInput" placeholder="Insira o número WIN" required>
+  <main>
+    <form onsubmit="validarWIN(); return false;">
+      <input type="text" id="winInput" placeholder="Introduz o número WIN" />
       <button type="submit">Validar</button>
     </form>
-    <div id="resultadoValidacao" class="resultado"></div>
-    <div id="detalhesValidacao" class="detalhes"></div>
+    <div id="resultadoValidacao"></div>
   </main>
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
