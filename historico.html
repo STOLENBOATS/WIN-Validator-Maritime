@@ -1,34 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Histórico</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Histórico</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body onload="carregarHistorico()">
-  <header>
-    <h1>Histórico de Validações</h1>
-    <nav>
-      <a href="validador.html">Validador</a>
-      <a href="perfil.html">Perfil</a>
-    </nav>
-  </header>
-  <main>
-    <table id="historicoTable">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>WIN / HIN / N.º CASCO</th>
-          <th>Resultado</th>
-          <th>Justificação</th>
-          <th>Fotografia</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </main>
-  <script src="script.js" defer></script>
+<body>
+    <header>
+        <h1>Histórico de Verificações</h1>
+    </header>
+    <main>
+        <table id="tabelaHistorico">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>WIN / HIN / Nº CASCO</th>
+                    <th>Resultado</th>
+                    <th>Justificação</th>
+                    <th>Foto</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>
