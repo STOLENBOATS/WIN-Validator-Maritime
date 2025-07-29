@@ -1,0 +1,23 @@
+{
+  "Yamaha": {
+    "regex": "^[A-Z0-9\\s]{10,}$",
+    "camposEsperados": [
+      "Modelo",
+      "C\u00f3digo",
+      "Comprimento do veio",
+      "N\u00famero de s\u00e9rie"
+    ],
+    "descricao": "Formato padr\u00e3o da etiqueta Yamaha (modelo + c\u00f3digo + comprimento + n\u00famero).",
+    "notas": "Validar integridade visual e tipo de propuls\u00e3o (sem Jet Drive em modelos fora de borda)."
+  },
+  "Honda": {
+    "regex": "^BF[0-9]{2,3}[A-Z]{2}\\s[0-9]{7}$",
+    "camposEsperados": [
+      "Modelo",
+      "Letra de revis\u00e3o",
+      "N\u00famero de s\u00e9rie"
+    ],
+    "descricao": "Etiqueta com selo de modelo e n\u00famero em \u00e1rea diferente do bloco motor.",
+    "notas": "Confirmar que existem 2 etiquetas distintas no motor."
+  }
+}

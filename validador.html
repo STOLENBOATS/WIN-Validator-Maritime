@@ -2,20 +2,78 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Validador WIN</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script defer src="script.js"></script>
+  <title>Validador WIN & Motor</title>
+  <script src="carregarRegrasMotor.js"></script>
+  <script src="validarNumeroMotor.js"></script>
+  <script src="validator.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .hidden { display: none; }
+    .valido { color: green; font-weight: bold; }
+    .invalido { color: red; font-weight: bold; }
+    .resultado { margin-top: 20px; }
+    .secao { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    table { border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #aaa; padding: 5px 10px; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Validador de Número WIN</h1>
-    <input type="text" id="winInput" placeholder="Introduz o WIN (ex: FR-CNBZA135A612)">
+  <h2>Validador de Identificação de Embarcações</h2>
+  <button onclick="mostrarSecao('win')">Validar WIN</button>
+  <button onclick="mostrarSecao('motor')">Validar Motor</button>
+
+  <div id="secaoWin" class="secao">
+    <h3>Validador WIN</h3>
+    <input type="text" id="winInput">
     <button onclick="validarWIN()">Validar</button>
-    <div id="resultado"></div>
-    <div id="detalhes"></div>
-    <br>
-    <button onclick="window.location.href='historico.html'">Ver Histórico</button>
-    <button onclick="window.location.href='login.html'">Sair</button>
+    <div id="resultadoWIN"></div>
   </div>
+
+  <div id="secaoMotor" class="secao hidden">
+    <h3>Validador de Motor</h3>
+    <select id="marca">
+      <option value="Yamaha">Yamaha</option>
+      <option value="Honda">Honda</option>
+    </select><br><br>
+    <input type="text" id="numero" placeholder="Insere número de motor"><br>
+    <button onclick="validarMotor()">Validar</button>
+    <div class="resultado" id="resultadoMotor"></div>
+  </div>
+
+  <script>
+    function mostrarSecao(secao) {
+      document.getElementById('secaoWin').classList.add('hidden');
+      document.getElementById('secaoMotor').classList.add('hidden');
+      document.getElementById('secao' + secao.charAt(0).toUpperCase() + secao.slice(1)).classList.remove('hidden');
+    }
+
+    function validarMotor() {
+      const marca = document.getElementById("marca").value;
+      const numero = document.getElementById("numero").value;
+      const res = validarNumeroMotor(marca, numero);
+      const div = document.getElementById("resultadoMotor");
+      div.innerHTML = `
+        <p class="${res.valido ? 'valido' : 'invalido'}">${res.mensagem}</p>
+        <p><strong>Campos:</strong> ${res.camposEsperados.join(', ')}</p>
+        <p><strong>Descrição:</strong> ${res.descricao}</p>
+        <p><strong>Notas:</strong> ${res.notas}</p>`;
+    }
+
+    function validarWIN() {
+      const win = document.getElementById("winInput").value;
+      const resultado = validarNumeroWIN(win);
+      const div = document.getElementById("resultadoWIN");
+      if (!resultado.valido) {
+        div.innerHTML = `<p class="invalido">${resultado.mensagem}</p>`;
+        return;
+      }
+      let html = `<p class="valido">${resultado.mensagem}</p><table><tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>`;
+      resultado.campos.forEach(c => {
+        html += `<tr><td>${c.nome}</td><td>${c.valor}</td><td>${c.interpretacao}</td></tr>`;
+      });
+      html += `</table>`;
+      div.innerHTML = html;
+    }
+  </script>
 </body>
 </html>
