@@ -1,24 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - WIN Validator</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.5rem;
+      width: 80%;
+    }
+    button {
+      padding: 0.5rem 1rem;
+    }
+    #loginError {
+      color: red;
+    }
+  </style>
+  <script>
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (user === "admin" && pass === "Admin2025") {
+        window.location.href = "validador.html";
+      } else {
+        document.getElementById("loginError").innerText = "Credenciais inválidas";
+      }
+    }
+  </script>
 </head>
 <body>
-    <header>
-        <h1>Validador WIN</h1>
-    </header>
-    <main class="login-container">
-        <form onsubmit="return validarLogin()">
-            <h2>Iniciar Sessão</h2>
-            <input type="text" id="username" placeholder="Utilizador" required />
-            <input type="password" id="password" placeholder="Password" required />
-            <button type="submit">Entrar</button>
-        </form>
-    </main>
-    <script src="script.js"></script>
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Utilizador">
+    <input type="password" id="password" placeholder="Palavra-passe">
+    <button onclick="login()">Entrar</button>
+    <p id="loginError"></p>
+  </div>
 </body>
 </html>
