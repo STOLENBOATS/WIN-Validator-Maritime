@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Validador de Motor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="motor.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Validador de Número de Motor</h1>
+    <label for="marca">Escolha a marca:</label>
+    <select id="marca" onchange="mostrarCampos()">
+      <option value="">-- Selecionar marca --</option>
+      <option value="mercury">Mercury / Mariner</option>
+      <option value="yamaha">Yamaha</option>
+      <option value="suzuki">Suzuki</option>
+      <option value="honda">Honda</option>
+      <option value="volvo">Volvo Penta</option>
+    </select>
+
+    <div id="camposMarca" style="margin-top:20px;"></div>
+    <div id="resultadoMotor" style="margin-top:20px;"></div>
+    <br>
+    <button onclick="window.location.href='validador.html'">Voltar ao Validador WIN</button>
+  </div>
+</body>
+</html>
