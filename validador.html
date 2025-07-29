@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>Validador WIN</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Validador WIN</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Validador WIN / HIN</h1>
-    </header>
-    <main>
-        <input type="text" id="winInput" placeholder="Insere o número WIN">
-        <button onclick="validarWIN()">Validar</button>
-        <div id="resultado"></div>
-        <div id="detalhesValidacao"></div>
-    </main>
-    <script src="script.js"></script>
+  <div class="container">
+    <h1>Validador de Número WIN</h1>
+    <input type="text" id="winInput" placeholder="Introduz o WIN (ex: FR-CNBZA135A612)">
+    <button onclick="validarWIN()">Validar</button>
+    <div id="resultado"></div>
+    <div id="detalhes"></div>
+  </div>
 </body>
 </html>
