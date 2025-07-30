@@ -18,19 +18,21 @@
     <h1 style="font-size: 1.8em; margin: 0;">Validador Marítimo</h1>
   </div>
 
-  <h2>Histórico de Validações Motores</h2>
+  <h2>Histórico de Validações de Motores</h2>
   <button onclick="location.href='validador.html'">⬅ Voltar ao Validador</button>
   <div id="tabelaHistorico"></div>
 
   <script>
-    function carregarHistoricoMotores() {
-      const historico = JSON.parse(localStorage.getItem('hisMotores') || '[]');
-      let html = '<table><tr><th>Data</th><th>Motores</th><th>Válido</th><th>Mensagem</th><th>Foto</th></tr>';
+    function carregarHistoricoMotor() {
+      const historico = JSON.parse(localStorage.getItem('hisMotor') || '[]');
+      let html = '<table><tr><th>Data</th><th>Marca</th><th>Campo1</th><th>Campo2</th><th>Válido</th><th>Mensagem</th><th>Foto</th></tr>';
       historico.forEach((item, i) => {
         const foto = item.foto || 'placeholder.jpg';
         html += `<tr>
           <td>${item.data}</td>
           <td>${item.marca}</td>
+          <td>${item.campo1}</td>
+          <td>${item.campo2 || ''}</td>
           <td>${item.valido}</td>
           <td>${item.msg}</td>
           <td>
@@ -48,15 +50,15 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
-        const historico = JSON.parse(localStorage.getItem('hisMotores') || '[]');
+        const historico = JSON.parse(localStorage.getItem('hisMotor') || '[]');
         historico[index].foto = e.target.result;
-        localStorage.setItem('hisMotores', JSON.stringify(historico));
+        localStorage.setItem('hisMotor', JSON.stringify(historico));
         document.getElementById('img' + index).src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    window.addEventListener('DOMContentLoaded', carregarHistoricoMotores);
+    window.addEventListener('DOMContentLoaded', carregarHistoricoMotor);
   </script>
 </body>
 </html>
