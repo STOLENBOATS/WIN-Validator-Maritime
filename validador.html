@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <title>Validador WIN & Motor</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
+    body { font-family: Arial, sans-serif; font-size: 16px; padding: 20px; }
     .hidden { display: none; }
     .valido { color: green; font-weight: bold; }
     .invalido { color: red; font-weight: bold; }
@@ -16,7 +16,13 @@
     input, select { padding: 5px; margin-top: 5px; }
   </style>
 </head>
-<body onload="mostrarSecao('win')">
+<body>
+
+<div style="display: flex; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
+  <img src="logo-pm.png" alt="Logotipo Polícia Marítima" style="height: 50px; margin-right: 15px;">
+  <h1 style="font-size: 1.8em; margin: 0;">Validador Marítimo</h1>
+</div>
+ onload="mostrarSecao('win')">
   <h2>Validador de Identificação de Embarcações</h2>
   <button onclick="mostrarSecao('win')">Validar WIN</button>
   <button onclick="mostrarSecao('motor')">Validar Motor</button>
@@ -26,7 +32,7 @@
   <div id="secaoWin" class="secao">
     <h3>Validador WIN</h3>
     <input type="text" id="winInput" placeholder="Introduz número WIN (14 ou 16 caracteres)" size="40"><br>
-    <label>Fotografia:</label><input type="file" id="fotoWinInput" accept="image/*"><br>
+    <label style='font-weight:bold'>Fotografia:</label><input type="file" id="fotoWinInput" accept="image/*"><br>
     <button onclick="validarWIN()">Validar</button>
     <button onclick="window.location.href='historico-win.html'">Ver Histórico WIN</button>
     <div id="resultadoWIN"></div>
@@ -35,7 +41,7 @@
   <!-- Seção Motor -->
   <div id="secaoMotor" class="secao hidden">
     <h3>Validador de Motor</h3>
-    <label for="marca">Marca:</label><br>
+    <label style='font-weight:bold' for="marca">Marca:</label><br>
     <select id="marca" onchange="mostrarCamposMotor()">
       <option value="">-- Selecionar marca --</option>
       <option value="Yamaha">Yamaha</option>
@@ -45,7 +51,7 @@
       <option value="Suzuki">Suzuki</option>
     </select>
     <div id="camposMotor" style="margin-top:10px;"></div>
-    <label>Fotografia:</label><input type="file" id="fotoMotorInput" accept="image/*"><br>
+    <label style='font-weight:bold'>Fotografia:</label><input type="file" id="fotoMotorInput" accept="image/*"><br>
     <button onclick="validarMotor()">Validar</button>
     <button onclick="window.location.href='historico-motor.html'">Ver Histórico Motores</button>
     <div id="resultadoMotor"></div>
@@ -100,8 +106,8 @@
         return;
       }
 
-      let out = `<p class="valido">${res.mensagem}</p><table class="feedback-table"><tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>`;
-      res.campos.forEach(c => { out += `<tr><td>${c.nome}</td><td>${c.valor}</td><td>${c.interpretacao}</td></tr>`; });
+      let out = `<p class="valido">${res.mensagem}</p><table class="feedback-table"><tr><th style='font-weight:bold'>Campo</th><th style='font-weight:bold'>Valor</th><th style='font-weight:bold'>Interpretação</th></tr>`;
+      res.campos.forEach(c => { out += `<tr><td style='font-size:15px'>${c.nome}</td><td style='font-size:15px'>${c.valor}</td><td style='font-size:15px'>${c.interpretacao}</td></tr>`; });
       out += '</table>';
       div.innerHTML = out;
 
