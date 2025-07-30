@@ -1,41 +1,48 @@
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <title>Validador WIN & Motor</title>
-  <script src="carregarRegrasMotor.js"></script>
-  <script src="validarNumeroMotor.js"></script>
-  <script src="validator.js"></script>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     .hidden { display: none; }
     .valido { color: green; font-weight: bold; }
     .invalido { color: red; font-weight: bold; }
     .resultado { margin-top: 20px; }
-    .secao { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 15px; }
-    table { border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #aaa; padding: 5px 10px; }
+    button { margin-right: 10px; }
+    .secao { border: 1px solid #ccc; padding: 15px; margin-top: 15px; border-radius: 10px; }
+    .feedback-table { border-collapse: collapse; margin-top: 10px; }
+    .feedback-table td, .feedback-table th { border: 1px solid #ccc; padding: 5px 10px; }
   </style>
 </head>
 <body>
   <h2>Validador de Identificação de Embarcações</h2>
+
   <button onclick="mostrarSecao('win')">Validar WIN</button>
   <button onclick="mostrarSecao('motor')">Validar Motor</button>
 
+  <!-- SECÇÃO WIN -->
   <div id="secaoWin" class="secao">
     <h3>Validador WIN</h3>
-    <input type="text" id="winInput">
+    <input type="text" id="winInput" placeholder="Introduz número WIN" size="40">
     <button onclick="validarWIN()">Validar</button>
     <div id="resultadoWIN"></div>
   </div>
 
+  <!-- SECÇÃO MOTOR -->
   <div id="secaoMotor" class="secao hidden">
-    <h3>Validador de Motor</h3>
+    <h3>Validador de Número de Motor</h3>
+    <label for="marca">Marca:</label>
     <select id="marca">
       <option value="Yamaha">Yamaha</option>
       <option value="Honda">Honda</option>
+      <option value="Mercury (Inboard)">Mercury (Inboard)</option>
     </select><br><br>
-    <input type="text" id="numero" placeholder="Insere número de motor"><br>
+
+    <label for="numero">Número de Motor:</label>
+    <input type="text" id="numero" placeholder="Ex: F350NSA 6ML N 1005843" size="40"><br><br>
+
     <button onclick="validarMotor()">Validar</button>
     <div class="resultado" id="resultadoMotor"></div>
   </div>
@@ -44,19 +51,85 @@
     function mostrarSecao(secao) {
       document.getElementById('secaoWin').classList.add('hidden');
       document.getElementById('secaoMotor').classList.add('hidden');
-      document.getElementById('secao' + secao.charAt(0).toUpperCase() + secao.slice(1)).classList.remove('hidden');
+      if (secao === 'win') {
+        document.getElementById('secaoWin').classList.remove('hidden');
+      } else {
+        document.getElementById('secaoMotor').classList.remove('hidden');
+      }
+    }
+
+    function validarNumeroWIN(win) {
+      if (!win || win.length < 14) {
+        return { valido: false, mensagem: "Número WIN inválido.", campos: [] };
+      }
+
+      const campos = [
+        { nome: "País", valor: win.slice(0, 2), interpretacao: "Código de país" },
+        { nome: "Fabricante", valor: win.slice(2, 5), interpretacao: "Código do fabricante" },
+        { nome: "Série", valor: win.slice(5, 10), interpretacao: "Número de série" },
+        { nome: "Mês de Produção", valor: win[10], interpretacao: "Letra representando o mês" },
+        { nome: "Ano de Produção", valor: win[11], interpretacao: "Ano" },
+        { nome: "Ano do Modelo", valor: win.slice(12, 14), interpretacao: "Ano do modelo" }
+      ];
+
+      return {
+        valido: true,
+        mensagem: "Número WIN válido.",
+        campos: campos
+      };
+    }
+
+    function validarNumeroMotor(marca, numero) {
+      if (!numero || numero.length < 6) {
+        return {
+          valido: false,
+          mensagem: "Número de motor inválido ou incompleto.",
+          camposEsperados: [],
+          descricao: "",
+          notas: ""
+        };
+      }
+
+      const base = {
+        Yamaha: {
+          camposEsperados: ["Modelo", "Código", "Comprimento Veio", "Número Série"],
+          descricao: "Formato típico Yamaha: FxxxNSA 6ML N 1234567",
+          notas: "Letra 'N' representa Jet Drive. Verifique a coerência com o tipo de motor."
+        },
+        Honda: {
+          camposEsperados: ["Modelo", "Número Série", "Etiqueta Frontal", "Core Plug"],
+          descricao: "Honda usa etiquetas duplas: lateral e core plug fundido.",
+          notas: "Os dois devem coincidir. Divergências sugerem fraude."
+        },
+        "Mercury (Inboard)": {
+          camposEsperados: ["S/N Transom", "Etiqueta Frontal"],
+          descricao: "Transom S/N é obrigatório em inboards Mercury.",
+          notas: "A ausência do transom invalida o motor."
+        }
+      };
+
+      const info = base[marca];
+      return {
+        valido: true,
+        mensagem: "Número validado com base na marca selecionada.",
+        camposEsperados: info.camposEsperados,
+        descricao: info.descricao,
+        notas: info.notas
+      };
     }
 
     function validarMotor() {
       const marca = document.getElementById("marca").value;
       const numero = document.getElementById("numero").value;
       const res = validarNumeroMotor(marca, numero);
-      const div = document.getElementById("resultadoMotor");
-      div.innerHTML = `
+
+      const divResultado = document.getElementById("resultadoMotor");
+      divResultado.innerHTML = `
         <p class="${res.valido ? 'valido' : 'invalido'}">${res.mensagem}</p>
-        <p><strong>Campos:</strong> ${res.camposEsperados.join(', ')}</p>
+        <p><strong>Campos Esperados:</strong> ${res.camposEsperados?.join(', ') || 'N/D'}</p>
         <p><strong>Descrição:</strong> ${res.descricao}</p>
-        <p><strong>Notas:</strong> ${res.notas}</p>`;
+        <p><strong>Notas:</strong> ${res.notas}</p>
+      `;
     }
 
     function validarWIN() {
@@ -67,12 +140,16 @@
         div.innerHTML = `<p class="invalido">${resultado.mensagem}</p>`;
         return;
       }
-      let html = `<p class="valido">${resultado.mensagem}</p><table><tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>`;
-      resultado.campos.forEach(c => {
-        html += `<tr><td>${c.nome}</td><td>${c.valor}</td><td>${c.interpretacao}</td></tr>`;
+
+      let tabela = `<p class="valido">${resultado.mensagem}</p>`;
+      tabela += '<table class="feedback-table">';
+      tabela += '<tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>';
+      resultado.campos.forEach(campo => {
+        tabela += `<tr><td>${campo.nome}</td><td>${campo.valor}</td><td>${campo.interpretacao}</td></tr>`;
       });
-      html += `</table>`;
-      div.innerHTML = html;
+      tabela += '</table>';
+
+      div.innerHTML = tabela;
     }
   </script>
 </body>
