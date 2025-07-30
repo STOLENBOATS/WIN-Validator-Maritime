@@ -1,29 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Histórico WIN</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script defer src="script.js"></script>
+  <title>Histórico de Validações</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f0f0f0; }
+    button { margin: 10px 5px 0 0; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Histórico de Verificações</h1>
-    <table id="historicoTable">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>WIN</th>
-          <th>Resultado</th>
-          <th>Justificação</th>
-          <th>Foto</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <br>
-    <button onclick="window.location.href='validador.html'">Voltar ao Validador</button>
-    <button onclick="window.location.href='login.html'">Sair</button>
-  </div>
+  <h2>Histórico de Validações WIN</h2>
+  <table id="tabelaWIN">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>WIN</th>
+        <th>Resultado</th>
+        <th>Mensagem</th>
+        <th>Foto</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Histórico de Validações de Motores</h2>
+  <table id="tabelaMotor">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Marca</th>
+        <th>Campo 1</th>
+        <th>Campo 2</th>
+        <th>Resultado</th>
+        <th>Mensagem</th>
+        <th>Foto</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <br>
+  <button onclick="window.location.href='validador.html'">Voltar ao Validador</button>
+  <button onclick="window.location.href='login.html'">Sair</button>
+
+  <script>
+    function carregarHistorico() {
+      const hWIN = JSON.parse(localStorage.getItem('hisWIN') || '[]');
+      const hMotor = JSON.parse(localStorage.getItem('hisM') || '[]');
+
+      const tabelaWIN = document.querySelector("#tabelaWIN tbody");
+      hWIN.forEach(e => {
+        const linha = `<tr>
+          <td>${e.data}</td>
+          <td>${e.win}</td>
+          <td>${e.val}</td>
+          <td>${e.msg}</td>
+          <td><em>[Foto reservada]</em></td>
+        </tr>`;
+        tabelaWIN.innerHTML += linha;
+      });
+
+      const tabelaMotor = document.querySelector("#tabelaMotor tbody");
+      hMotor.forEach(e => {
+        const linha = `<tr>
+          <td>${e.data}</td>
+          <td>${e.m}</td>
+          <td>${e.c1}</td>
+          <td>${e.c2}</td>
+          <td>${e.val}</td>
+          <td>${e.msg}</td>
+          <td><em>[Foto reservada]</em></td>
+        </tr>`;
+        tabelaMotor.innerHTML += linha;
+      });
+    }
+
+    window.onload = carregarHistorico;
+  </script>
 </body>
 </html>
