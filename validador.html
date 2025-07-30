@@ -26,9 +26,8 @@
     <h3>Validador WIN</h3>
     <input type="text" id="winInput" placeholder="Introduz número WIN" size="40">
     <button onclick="validarWIN()">Validar</button>
-    <button onclick="mostrarHistoricoWIN()">Ver Histórico WIN</button>
+    <button onclick="window.location.href='historico_win.html'">Ver Histórico WIN</button>
     <div id="resultadoWIN"></div>
-    <div id="historicoWIN" class="hidden"></div>
   </div>
 
   <!-- Seção Motor -->
@@ -47,9 +46,8 @@
     <div id="camposMotor" style="margin-top:10px;"></div>
 
     <button onclick="validarMotor()">Validar</button>
-    <button onclick="mostrarHistoricoMotor()">Ver Histórico Motores</button>
+    <button onclick="window.location.href='historico_motor.html'">Ver Histórico Motores</button>
     <div id="resultadoMotor"></div>
-    <div id="historicoMotor" class="hidden"></div>
   </div>
 
   <script>
@@ -60,19 +58,10 @@
       if(sec==='motor') document.getElementById('secaoMotor').classList.remove('hidden');
     }
 
-    // Histórico WIN
     function salvarHistoricoWIN(win,val,msg){
       const h=JSON.parse(localStorage.getItem('hisWIN')||'[]');
       h.unshift({data:new Date().toLocaleString(),win,val,msg});
       localStorage.setItem('hisWIN',JSON.stringify(h));
-    }
-    function mostrarHistoricoWIN(){
-      const h=JSON.parse(localStorage.getItem('hisWIN')||'[]');
-      let t='<table class="feedback-table"><tr><th>Data</th><th>WIN</th><th>V</th><th>Msg</th></tr>';
-      h.forEach(e=>t+=`<tr><td>${e.data}</td><td>${e.win}</td><td>${e.val}</td><td>${e.msg}</td></tr>`);
-      t+='</table>';
-      const d=document.getElementById('historicoWIN');
-      d.innerHTML=t; d.classList.remove('hidden');
     }
 
     function validarNumeroWIN(win) {
@@ -92,6 +81,7 @@
         {nome:'Ano Mod',valor:mod,interpretacao:mod}
       ]};
     }
+
     function validarWIN(){
       const w=document.getElementById('winInput').value;
       const r=validarNumeroWIN(w);
@@ -103,7 +93,6 @@
       salvarHistoricoWIN(w,r.valido,r.mensagem);
     }
 
-    // Motor
     function mostrarCamposMotor(){
       const m=document.getElementById('marca').value;
       let html='';
@@ -114,6 +103,7 @@
       else if(m==='Suzuki') html='<input id="campo1" placeholder="Ex: DF1151234567"><br>';
       document.getElementById('camposMotor').innerHTML=html;
     }
+
     const regras={
       Yamaha:{regex:/^[A-Z0-9]{8,}$/},
       Honda:{regex:/^.+$/},
@@ -121,6 +111,7 @@
       MercuryOut:{regex:/^[0-3][A-Z][0-9]{6}$/},
       Suzuki:{regex:/^[A-Z]{2}[0-9]{2,3}[A-Z]*[0-9]{7}$/}
     };
+
     function validarMotor(){
       const m=document.getElementById('marca').value;
       const c1=document.getElementById('campo1')?document.getElementById('campo1').value:'';
@@ -132,18 +123,11 @@
       document.getElementById('resultadoMotor').innerHTML=`<p class="${ok?'valido':'invalido'}">${msg}</p>`;
       salvarHistoricoMotor(m,c1,c2,ok,msg);
     }
+
     function salvarHistoricoMotor(m,c1,c2,val,msg){
       const h=JSON.parse(localStorage.getItem('hisM')||'[]');
       h.unshift({data:new Date().toLocaleString(),m,c1,c2,val,msg});
       localStorage.setItem('hisM',JSON.stringify(h));
-    }
-    function mostrarHistoricoMotor(){
-      const h=JSON.parse(localStorage.getItem('hisM')||'[]');
-      let t='<table class="feedback-table"><tr><th>Data</th><th>Marca</th><th>C1</th><th>C2</th><th>Val</th><th>Msg</th></tr>';
-      h.forEach(e=>t+=`<tr><td>${e.data}</td><td>${e.m}</td><td>${e.c1}</td><td>${e.c2}</td><td>${e.val}</td><td>${e.msg}</td></tr>`);
-      t+='</table>';
-      const d=document.getElementById('historicoMotor');
-      d.innerHTML=t; d.classList.remove('hidden');
     }
 
     mostrarSecao('win');

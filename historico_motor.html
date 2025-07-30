@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Histórico Motores</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>Histórico de Validações de Motores</h2>
+  <div id="tabelaHistorico"></div>
+  <script>
+    const h = JSON.parse(localStorage.getItem('hisM') || '[]');
+    let t = '<table><tr><th>Data</th><th>Marca</th><th>C1</th><th>C2</th><th>Val</th><th>Msg</th></tr>';
+    h.forEach(e => t += `<tr><td>${e.data}</td><td>${e.m}</td><td>${e.c1}</td><td>${e.c2}</td><td>${e.val}</td><td>${e.msg}</td></tr>`);
+    t += '</table>';
+    document.getElementById('tabelaHistorico').innerHTML = t;
+  </script>
+</body>
+</html>
