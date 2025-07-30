@@ -9,148 +9,144 @@
     .hidden { display: none; }
     .valido { color: green; font-weight: bold; }
     .invalido { color: red; font-weight: bold; }
-    .resultado { margin-top: 20px; }
-    button { margin-right: 10px; }
     .secao { border: 1px solid #ccc; padding: 15px; margin-top: 15px; border-radius: 10px; }
     .feedback-table { border-collapse: collapse; margin-top: 10px; }
     .feedback-table td, .feedback-table th { border: 1px solid #ccc; padding: 5px 10px; }
+    button { margin-right: 10px; margin-top: 10px; }
   </style>
 </head>
 <body>
   <h2>Validador de Identificação de Embarcações</h2>
-
   <button onclick="mostrarSecao('win')">Validar WIN</button>
   <button onclick="mostrarSecao('motor')">Validar Motor</button>
+  <button onclick="window.location.href='login.html'">Logout</button>
 
-  <!-- SECÇÃO WIN -->
+  <!-- Seção WIN -->
   <div id="secaoWin" class="secao">
     <h3>Validador WIN</h3>
     <input type="text" id="winInput" placeholder="Introduz número WIN" size="40">
     <button onclick="validarWIN()">Validar</button>
+    <button onclick="mostrarHistoricoWIN()">Ver Histórico WIN</button>
     <div id="resultadoWIN"></div>
+    <div id="historicoWIN" class="hidden"></div>
   </div>
 
-  <!-- SECÇÃO MOTOR -->
+  <!-- Seção Motor -->
   <div id="secaoMotor" class="secao hidden">
-    <h3>Validador de Número de Motor</h3>
-    <label for="marca">Marca:</label>
-    <select id="marca">
+    <h3>Validador de Motor</h3>
+    <label>Marca:</label>
+    <select id="marca" onchange="mostrarCamposMotor()">
+      <option value="">-- Selecionar marca --</option>
       <option value="Yamaha">Yamaha</option>
       <option value="Honda">Honda</option>
-      <option value="Mercury (Inboard)">Mercury (Inboard)</option>
-    </select><br><br>
+      <option value="MercuryIn">Mercury (Inboard)</option>
+      <option value="MercuryOut">Mercury (Outboard)</option>
+      <option value="Suzuki">Suzuki</option>
+    </select><br>
 
-    <label for="numero">Número de Motor:</label>
-    <input type="text" id="numero" placeholder="Ex: F350NSA 6ML N 1005843" size="40"><br><br>
+    <div id="camposMotor" style="margin-top:10px;"></div>
 
     <button onclick="validarMotor()">Validar</button>
-    <div class="resultado" id="resultadoMotor"></div>
+    <button onclick="mostrarHistoricoMotor()">Ver Histórico Motores</button>
+    <div id="resultadoMotor"></div>
+    <div id="historicoMotor" class="hidden"></div>
   </div>
 
   <script>
-    function mostrarSecao(secao) {
+    function mostrarSecao(sec) {
       document.getElementById('secaoWin').classList.add('hidden');
       document.getElementById('secaoMotor').classList.add('hidden');
-      if (secao === 'win') {
-        document.getElementById('secaoWin').classList.remove('hidden');
-      } else {
-        document.getElementById('secaoMotor').classList.remove('hidden');
-      }
+      if(sec==='win') document.getElementById('secaoWin').classList.remove('hidden');
+      if(sec==='motor') document.getElementById('secaoMotor').classList.remove('hidden');
+    }
+
+    // Histórico WIN
+    function salvarHistoricoWIN(win,val,msg){
+      const h=JSON.parse(localStorage.getItem('hisWIN')||'[]');
+      h.unshift({data:new Date().toLocaleString(),win,val,msg});
+      localStorage.setItem('hisWIN',JSON.stringify(h));
+    }
+    function mostrarHistoricoWIN(){
+      const h=JSON.parse(localStorage.getItem('hisWIN')||'[]');
+      let t='<table class="feedback-table"><tr><th>Data</th><th>WIN</th><th>V</th><th>Msg</th></tr>';
+      h.forEach(e=>t+=`<tr><td>${e.data}</td><td>${e.win}</td><td>${e.val}</td><td>${e.msg}</td></tr>`);
+      t+='</table>';
+      const d=document.getElementById('historicoWIN');
+      d.innerHTML=t; d.classList.remove('hidden');
     }
 
     function validarNumeroWIN(win) {
-      if (!win || win.length < 14) {
-        return { valido: false, mensagem: "Número WIN inválido.", campos: [] };
-      }
-
-      const campos = [
-        { nome: "País", valor: win.slice(0, 2), interpretacao: "Código de país" },
-        { nome: "Fabricante", valor: win.slice(2, 5), interpretacao: "Código do fabricante" },
-        { nome: "Série", valor: win.slice(5, 10), interpretacao: "Número de série" },
-        { nome: "Mês de Produção", valor: win[10], interpretacao: "Letra representando o mês" },
-        { nome: "Ano de Produção", valor: win[11], interpretacao: "Ano" },
-        { nome: "Ano do Modelo", valor: win.slice(12, 14), interpretacao: "Ano do modelo" }
-      ];
-
-      return {
-        valido: true,
-        mensagem: "Número WIN válido.",
-        campos: campos
-      };
+      win=win.replace(/-/g,'').trim().toUpperCase();
+      if(win.length!==14&&win.length!==16) return {valido:false,mensagem:'WIN inválido',campos:[]};
+      const pais=win.slice(0,2),fab=win.slice(2,5);
+      const serie=win.length===14?win.slice(5,10):win.slice(5,12);
+      const mes=win.length===14?win[10]:win[12];
+      const ano=win.length===14?win[11]:win[13];
+      const mod=win.length===14?win.slice(12):win.slice(14);
+      return {valido:true,mensagem:'WIN válido',campos:[
+        {nome:'País',valor:pais,interpretacao:pais},
+        {nome:'Fab',valor:fab,interpretacao:fab},
+        {nome:'Série',valor:serie,interpretacao:'Livre'},
+        {nome:'Mês',valor:mes,interpretacao:mes},
+        {nome:'Ano Prod',valor:ano,interpretacao:ano},
+        {nome:'Ano Mod',valor:mod,interpretacao:mod}
+      ]};
+    }
+    function validarWIN(){
+      const w=document.getElementById('winInput').value;
+      const r=validarNumeroWIN(w);
+      const d=document.getElementById('resultadoWIN');
+      if(!r.valido){d.innerHTML=`<p class="invalido">${r.mensagem}</p>`;return;}
+      let h=`<p class="valido">${r.mensagem}</p><table class="feedback-table"><tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>`;
+      r.campos.forEach(c=>h+=`<tr><td>${c.nome}</td><td>${c.valor}</td><td>${c.interpretacao}</td></tr>`);
+      h+='</table>';d.innerHTML=h;
+      salvarHistoricoWIN(w,r.valido,r.mensagem);
     }
 
-    function validarNumeroMotor(marca, numero) {
-      if (!numero || numero.length < 6) {
-        return {
-          valido: false,
-          mensagem: "Número de motor inválido ou incompleto.",
-          camposEsperados: [],
-          descricao: "",
-          notas: ""
-        };
-      }
-
-      const base = {
-        Yamaha: {
-          camposEsperados: ["Modelo", "Código", "Comprimento Veio", "Número Série"],
-          descricao: "Formato típico Yamaha: FxxxNSA 6ML N 1234567",
-          notas: "Letra 'N' representa Jet Drive. Verifique a coerência com o tipo de motor."
-        },
-        Honda: {
-          camposEsperados: ["Modelo", "Número Série", "Etiqueta Frontal", "Core Plug"],
-          descricao: "Honda usa etiquetas duplas: lateral e core plug fundido.",
-          notas: "Os dois devem coincidir. Divergências sugerem fraude."
-        },
-        "Mercury (Inboard)": {
-          camposEsperados: ["S/N Transom", "Etiqueta Frontal"],
-          descricao: "Transom S/N é obrigatório em inboards Mercury.",
-          notas: "A ausência do transom invalida o motor."
-        }
-      };
-
-      const info = base[marca];
-      return {
-        valido: true,
-        mensagem: "Número validado com base na marca selecionada.",
-        camposEsperados: info.camposEsperados,
-        descricao: info.descricao,
-        notas: info.notas
-      };
+    // Motor
+    function mostrarCamposMotor(){
+      const m=document.getElementById('marca').value;
+      let html='';
+      if(m==='Yamaha') html='<input id="campo1" placeholder="Ex: 6E5L123456"><br>';
+      else if(m==='Honda') html='Frame SN:<input id="campo1" placeholder="Frame"><br>Engine SN:<input id="campo2" placeholder="Engine"><br>';
+      else if(m==='MercuryIn') html='<input id="campo1" placeholder="SN Transom"><br>';
+      else if(m==='MercuryOut') html='<input id="campo1" placeholder="SN Outboard"><br>';
+      else if(m==='Suzuki') html='<input id="campo1" placeholder="Ex: DF1151234567"><br>';
+      document.getElementById('camposMotor').innerHTML=html;
+    }
+    const regras={
+      Yamaha:{regex:/^[A-Z0-9]{8,}$/},
+      Honda:{regex:/^.+$/},
+      MercuryIn:{regex:/^[0-9A-Z]{7,8}$/},
+      MercuryOut:{regex:/^[0-3][A-Z][0-9]{6}$/},
+      Suzuki:{regex:/^[A-Z]{2}[0-9]{2,3}[A-Z]*[0-9]{7}$/}
+    };
+    function validarMotor(){
+      const m=document.getElementById('marca').value;
+      const c1=document.getElementById('campo1')?document.getElementById('campo1').value:'';
+      const c2=document.getElementById('campo2')?document.getElementById('campo2').value:'';
+      const r=regras[m];
+      let ok=false; let msg='';
+      if(m==='Honda') ok=r.regex.test(c1)&&r.regex.test(c2), msg=ok?'Honda ok':'Honda invalido';
+      else ok=r.regex.test(c1), msg=ok?m+' ok':m+' invalido';
+      document.getElementById('resultadoMotor').innerHTML=`<p class="${ok?'valido':'invalido'}">${msg}</p>`;
+      salvarHistoricoMotor(m,c1,c2,ok,msg);
+    }
+    function salvarHistoricoMotor(m,c1,c2,val,msg){
+      const h=JSON.parse(localStorage.getItem('hisM')||'[]');
+      h.unshift({data:new Date().toLocaleString(),m,c1,c2,val,msg});
+      localStorage.setItem('hisM',JSON.stringify(h));
+    }
+    function mostrarHistoricoMotor(){
+      const h=JSON.parse(localStorage.getItem('hisM')||'[]');
+      let t='<table class="feedback-table"><tr><th>Data</th><th>Marca</th><th>C1</th><th>C2</th><th>Val</th><th>Msg</th></tr>';
+      h.forEach(e=>t+=`<tr><td>${e.data}</td><td>${e.m}</td><td>${e.c1}</td><td>${e.c2}</td><td>${e.val}</td><td>${e.msg}</td></tr>`);
+      t+='</table>';
+      const d=document.getElementById('historicoMotor');
+      d.innerHTML=t; d.classList.remove('hidden');
     }
 
-    function validarMotor() {
-      const marca = document.getElementById("marca").value;
-      const numero = document.getElementById("numero").value;
-      const res = validarNumeroMotor(marca, numero);
-
-      const divResultado = document.getElementById("resultadoMotor");
-      divResultado.innerHTML = `
-        <p class="${res.valido ? 'valido' : 'invalido'}">${res.mensagem}</p>
-        <p><strong>Campos Esperados:</strong> ${res.camposEsperados?.join(', ') || 'N/D'}</p>
-        <p><strong>Descrição:</strong> ${res.descricao}</p>
-        <p><strong>Notas:</strong> ${res.notas}</p>
-      `;
-    }
-
-    function validarWIN() {
-      const win = document.getElementById("winInput").value;
-      const resultado = validarNumeroWIN(win);
-      const div = document.getElementById("resultadoWIN");
-      if (!resultado.valido) {
-        div.innerHTML = `<p class="invalido">${resultado.mensagem}</p>`;
-        return;
-      }
-
-      let tabela = `<p class="valido">${resultado.mensagem}</p>`;
-      tabela += '<table class="feedback-table">';
-      tabela += '<tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>';
-      resultado.campos.forEach(campo => {
-        tabela += `<tr><td>${campo.nome}</td><td>${campo.valor}</td><td>${campo.interpretacao}</td></tr>`;
-      });
-      tabela += '</table>';
-
-      div.innerHTML = tabela;
-    }
+    mostrarSecao('win');
   </script>
 </body>
 </html>
