@@ -1,45 +1,47 @@
-body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #f8f8f8;
+
+/* === Responsive Container === */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
-header {
-    background-color: #003366;
-    color: white;
-    padding: 10px;
-    text-align: center;
+
+/* === Ensure buttons and inputs resize === */
+input, button, select, textarea {
+  max-width: 100%;
+  box-sizing: border-box;
 }
-input[type="text"] {
-    width: 80%;
-    padding: 10px;
-    font-size: 1.1em;
-}
-button {
-    padding: 10px;
-    font-size: 1.1em;
-    margin-top: 10px;
-}
-#resultado {
-    margin-top: 20px;
-    font-size: 1.2em;
-}
-.valid {
-    color: green;
-}
-.invalid {
-    color: red;
-}
+
+/* === Responsive table font size and layout === */
 table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+/* === Viewport tag reminder (add this in <head> of HTML) === */
+/*
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+*/
+
+/* === Media Queries for Smaller Devices === */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  input, button, select, textarea {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    border: 1px solid #999;
-    padding: 8px;
-    text-align: center;
-}
-th {
-    background-color: #003366;
-    color: white;
+    margin-bottom: 10px;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.2em;
+  }
 }
