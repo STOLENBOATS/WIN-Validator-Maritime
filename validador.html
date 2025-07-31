@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <title>Validador WIN & Motor</title>
   <style>
-    body { font-family: Arial, sans-serif; font-size: 16px; padding: 20px; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
     .hidden { display: none; }
     .valido { color: green; font-weight: bold; }
     .invalido { color: red; font-weight: bold; }
@@ -15,14 +14,41 @@
     button { margin-right: 10px; margin-top: 10px; }
     input, select { padding: 5px; margin-top: 5px; }
   </style>
-</head>
-<body>
 
-<div style="display: flex; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
-  <img src="logo-pm.png" alt="Logotipo Polícia Marítima" style="height: 50px; margin-right: 15px;">
-  <h1 style="font-size: 1.8em; margin: 0;">Validador Marítimo</h1>
-</div>
- onload="mostrarSecao('win')">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.secao {
+  max-width: 800px;
+  margin: auto;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+input, select, button {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .feedback-table td, .feedback-table th {
+    font-size: 12px;
+    padding: 5px;
+  }
+}
+</style>
+
+</head>
+<body onload="mostrarSecao('win')">
   <h2>Validador de Identificação de Embarcações</h2>
   <button onclick="mostrarSecao('win')">Validar WIN</button>
   <button onclick="mostrarSecao('motor')">Validar Motor</button>
@@ -31,17 +57,17 @@
   <!-- Seção WIN -->
   <div id="secaoWin" class="secao">
     <h3>Validador WIN</h3>
-    <input type="text" id="winInput" placeholder="Introduz número WIN (14 ou 16 caracteres)" size="40"><br>
-    <label style='font-weight:bold'>Fotografia:</label><input type="file" id="fotoWinInput" accept="image/*"><br>
+    <input type="text" id="winInput" placeholder="Introduz número WIN (14 ou 16 caracteres)" size="40">
     <button onclick="validarWIN()">Validar</button>
-    <button onclick="window.location.href='historico-win.html'">Ver Histórico WIN</button>
+    <button onclick="mostrarHistoricoWIN()">Ver Histórico WIN</button>
     <div id="resultadoWIN"></div>
+    <div id="historicoWIN" class="hidden"></div>
   </div>
 
   <!-- Seção Motor -->
   <div id="secaoMotor" class="secao hidden">
     <h3>Validador de Motor</h3>
-    <label style='font-weight:bold' for="marca">Marca:</label><br>
+    <label for="marca">Marca:</label><br>
     <select id="marca" onchange="mostrarCamposMotor()">
       <option value="">-- Selecionar marca --</option>
       <option value="Yamaha">Yamaha</option>
@@ -51,21 +77,34 @@
       <option value="Suzuki">Suzuki</option>
     </select>
     <div id="camposMotor" style="margin-top:10px;"></div>
-    <label style='font-weight:bold'>Fotografia:</label><input type="file" id="fotoMotorInput" accept="image/*"><br>
     <button onclick="validarMotor()">Validar</button>
-    <button onclick="window.location.href='historico-motor.html'">Ver Histórico Motores</button>
+    <button onclick="mostrarHistoricoMotor()">Ver Histórico Motores</button>
     <div id="resultadoMotor"></div>
+    <div id="historicoMotor" class="hidden"></div>
   </div>
 
   <script>
     function logout() {
       window.location.href = 'login.html';
     }
-
     function mostrarSecao(sec) {
-      ['secaoWin','secaoMotor'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      ['secaoWin','secaoMotor','historicoWIN','historicoMotor'].forEach(id => document.getElementById(id).classList.add('hidden'));
       if (sec === 'win') document.getElementById('secaoWin').classList.remove('hidden');
       if (sec === 'motor') document.getElementById('secaoMotor').classList.remove('hidden');
+    }
+
+    // Histórico WIN
+    function salvarHistoricoWIN(win, valido, msg) {
+      const h = JSON.parse(localStorage.getItem('hisWIN')||'[]');
+      h.unshift({ data: new Date().toLocaleString(), win, valido, msg });
+      localStorage.setItem('hisWIN', JSON.stringify(h));
+    }
+    function mostrarHistoricoWIN() {
+      const h = JSON.parse(localStorage.getItem('hisWIN')||'[]');
+      let t = '<table class="feedback-table"><tr><th>Data</th><th>WIN</th><th>Válido</th><th>Mensagem</th></tr>';
+      h.forEach(e => { t += `<tr><td>${e.data}</td><td>${e.win}</td><td>${e.valido}</td><td>${e.msg}</td></tr>`; });
+      t += '</table>';
+      const d = document.getElementById('historicoWIN'); d.innerHTML = t; d.classList.remove('hidden');
     }
 
     function validarNumeroWIN(win) {
@@ -94,48 +133,25 @@
       ];
       return r;
     }
-
     function validarWIN() {
       const w = document.getElementById('winInput').value;
-      const file = document.getElementById('fotoWinInput').files[0];
       const res = validarNumeroWIN(w);
       const div = document.getElementById('resultadoWIN');
-
-      if (!res.valido) {
-        div.innerHTML = `<p class="invalido">${res.mensagem}</p>`;
-        return;
-      }
-
-      let out = `<p class="valido">${res.mensagem}</p><table class="feedback-table"><tr><th style='font-weight:bold'>Campo</th><th style='font-weight:bold'>Valor</th><th style='font-weight:bold'>Interpretação</th></tr>`;
-      res.campos.forEach(c => { out += `<tr><td style='font-size:15px'>${c.nome}</td><td style='font-size:15px'>${c.valor}</td><td style='font-size:15px'>${c.interpretacao}</td></tr>`; });
-      out += '</table>';
-      div.innerHTML = out;
-
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          salvarHistoricoWIN(w, res.valido, res.mensagem, e.target.result);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        salvarHistoricoWIN(w, res.valido, res.mensagem, null);
-      }
+      if (!res.valido) { div.innerHTML = `<p class="invalido">${res.mensagem}</p>`; return; }
+      let out = `<p class="valido">${res.mensagem}</p><table class="feedback-table"><tr><th>Campo</th><th>Valor</th><th>Interpretação</th></tr>`;
+      res.campos.forEach(c => { out += `<tr><td>${c.nome}</td><td>${c.valor}</td><td>${c.interpretacao}</td></tr>`; });
+      out += '</table>'; div.innerHTML = out;
+      salvarHistoricoWIN(w, res.valido, res.mensagem);
     }
 
-    function salvarHistoricoWIN(win, valido, msg, foto) {
-      const h = JSON.parse(localStorage.getItem('hisWIN')||'[]');
-      h.unshift({ data: new Date().toLocaleString(), win, valido, msg, foto });
-      localStorage.setItem('hisWIN', JSON.stringify(h));
-    }
-
+    // Motor
     const regrasMotor = {
       Yamaha: { regex: /^[A-Z0-9]{8,}$/ },
-      Honda: { regex: /^.+$/ },
+      Honda: { regex: /^[A-Z0-9]+$/ },
       MercuryIn: { regex: /^[0-9A-Z]{7,8}$/ },
       MercuryOut: { regex: /^[0-3][A-Z][0-9]{6}$/ },
       Suzuki: { regex: /^[A-Z]{2}[0-9]{2,3}[A-Z]*[0-9]{7}$/ }
     };
-
     const infoMotor = {
       Yamaha: { campos:['Etiqueta'], descricao:'Formato: código+serial', notas:'Sem Jet Drive'},
       Honda: { campos:['FrameSN','EngineSN'], descricao:'2 etiquetas (transom e bloco)', notas:'Devem coincidir'},
@@ -143,7 +159,6 @@
       MercuryOut: { campos:['OutboardSN'], descricao:'Outboard SN padrão', notas:'Prefixo 0-3'},
       Suzuki: { campos:['Etiqueta'], descricao:'DF/DT + 7 dígitos', notas:'Verificar prefixo'}
     };
-
     function mostrarCamposMotor() {
       const m = document.getElementById('marca').value;
       let html = '';
@@ -157,49 +172,17 @@
       }
       document.getElementById('camposMotor').innerHTML = html;
     }
-
-    function validarMotor() {
-      const marca = document.getElementById('marca').value;
-      const c1 = document.getElementById('campo1')?.value || '';
-      const c2 = document.getElementById('campo2')?.value || '';
-      const file = document.getElementById('fotoMotorInput').files[0];
-
-      const regras = regrasMotor[marca];
-      const info = infoMotor[marca];
-      let valido = false;
-      let mensagem = '';
-
-      if (marca === 'Honda') {
-        valido = regras.regex.test(c1) && regras.regex.test(c2);
-        mensagem = valido ? 'Número válido para Honda' : 'Número inválido (Honda requer dois códigos válidos)';
-      } else {
-        valido = regras.regex.test(c1);
-        mensagem = valido ? `Número válido para ${marca}` : `Número inválido para ${marca}`;
-      }
-
-      const div = document.getElementById('resultadoMotor');
-      div.innerHTML = `
-        <p class="${valido ? 'valido' : 'invalido'}">${mensagem}</p>
-        <p><strong>Campos Esperados:</strong> ${info?.campos.join(', ') || 'N/D'}</p>
-        <p><strong>Descrição:</strong> ${info?.descricao || 'Sem info'}</p>
-        <p><strong>Notas:</strong> ${info?.notas || 'Sem info'}</p>
-      `;
-
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          salvarHistoricoMotor(marca, c1, c2, valido, mensagem, e.target.result);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        salvarHistoricoMotor(marca, c1, c2, valido, mensagem, null);
-      }
-    }
-
-    function salvarHistoricoMotor(marca, campo1, campo2, valido, msg, foto) {
+    function salvarHistoricoMotor(m, c1, c2, val, msg) {
       const h = JSON.parse(localStorage.getItem('hisMotor')||'[]');
-      h.unshift({ data:new Date().toLocaleString(), marca, campo1, campo2, valido, msg, foto });
+      h.unshift({ data:new Date().toLocaleString(), marca:m, campo1:c1, campo2:c2, valido:val, msg });
       localStorage.setItem('hisMotor', JSON.stringify(h));
+    }
+    function mostrarHistoricoMotor() {
+      const h = JSON.parse(localStorage.getItem('hisMotor')||'[]');
+      let t = '<table class="feedback-table"><tr><th>Data</th><th>Marca</th><th>Campo1</th><th>Campo2</th><th>Válido</th><th>Msg</th></tr>';
+      h.forEach(e=>{ t += `<tr><td>${e.data}</td><td>${e.marca}</td><td>${e.campo1}</td><td>${e.campo2||''}</td><td>${e.valido}</td><td>${e.msg}</td></tr>`; });
+      t += '</table>';
+      const d = document.getElementById('historicoMotor'); d.innerHTML = t; d.classList.remove('hidden');
     }
   </script>
 </body>
