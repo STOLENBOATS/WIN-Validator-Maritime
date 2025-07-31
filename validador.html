@@ -152,59 +152,5 @@
       const d = document.getElementById('historicoMotor'); d.innerHTML = t; d.classList.remove('hidden');
     }
   </script>
-
-<!-- Motor Interpretation Visual Info -->
-<div id="motorInterpretation" style="display:none; margin-top: 20px;">
-  <h3>Interpretação do Número de Motor</h3>
-  <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-    <thead>
-      <tr>
-        <th>Campo</th>
-        <th>Valor Inserido</th>
-        <th>Interpretação</th>
-      </tr>
-    </thead>
-    <tbody id="motorInterpretationBody">
-      <!-- Conteúdo gerado dinamicamente -->
-    </tbody>
-  </table>
-</div>
-<script>
-  function showMotorInterpretation(marca, dados) {
-    const table = document.getElementById("motorInterpretation");
-    const body = document.getElementById("motorInterpretationBody");
-    body.innerHTML = "";
-
-    if (marca === "Yamaha") {
-      const interpretacao = [
-        { campo: "Modelo", valor: dados.modelo, descricao: "Ex: F350NSA → F350: 350hp, N: América do Norte, S: Long shaft, A: 1ª versão" },
-        { campo: "Código", valor: dados.codigo, descricao: "Código interno Yamaha (ex: 6ML)" },
-        { campo: "Letra Ano", valor: dados.letraAno, descricao: "Ex: N = 2022 (conforme tabela oficial Yamaha)" },
-        { campo: "Nº Série", valor: dados.numeroSerie, descricao: "Número sequencial de produção" }
-      ];
-      interpretacao.forEach(item => {
-        const row = `<tr><td>${item.campo}</td><td>${item.valor}</td><td>${item.descricao}</td></tr>`;
-        body.innerHTML += row;
-      });
-      table.style.display = "block";
-    }
-    else if (marca === "Honda") {
-      const interpretacao = [
-        { campo: "Modelo", valor: dados.modelo, descricao: "Ex: BF90A2 → 90hp, geração A, versão 2" },
-        { campo: "Número de Série", valor: dados.numeroSerie, descricao: "Número de produção interna Honda" },
-        { campo: "Ano Fabrico", valor: dados.ano, descricao: "Ex: M = 2021 (consultar tabela alfabética Honda)" }
-      ];
-      interpretacao.forEach(item => {
-        const row = `<tr><td>${item.campo}</td><td>${item.valor}</td><td>${item.descricao}</td></tr>`;
-        body.innerHTML += row;
-      });
-      table.style.display = "block";
-    }
-    else {
-      table.style.display = "none";
-    }
-  }
-</script>
-
 </body>
 </html>
