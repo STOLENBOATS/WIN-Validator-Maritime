@@ -1,47 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <title>Validador WIN & Motor</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 100%; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
     .hidden { display: none; }
     .valido { color: green; font-weight: bold; }
     .invalido { color: red; font-weight: bold; }
-    .secao {
-      max-width: 800px;
-      margin: auto;
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 10px;
-      box-sizing: border-box;
-    }
-    .feedback-table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-    }
-    .feedback-table td, .feedback-table th {
-      border: 1px solid #ccc;
-      padding: 5px 10px;
-      text-align: left;
-    }
+    .secao { border: 1px solid #ccc; padding: 15px; margin-top: 15px; border-radius: 10px; }
+    .feedback-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    .feedback-table td, .feedback-table th { border: 1px solid #ccc; padding: 5px 10px; text-align: left; }
     button { margin-right: 10px; margin-top: 10px; }
-    input, select {
-      padding: 5px;
-      margin-top: 5px;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-    @media (max-width: 600px) {
-      .feedback-table td, .feedback-table th {
-        font-size: 12px;
-        padding: 5px;
-      }
-    }
+    input, select { padding: 5px; margin-top: 5px; }
   </style>
 </head>
 <body onload="mostrarSecao('win')">
@@ -53,10 +24,11 @@
   <!-- Seção WIN -->
   <div id="secaoWin" class="secao">
     <h3>Validador WIN</h3>
-    <input type="text" id="winInput" placeholder="Introduz número WIN (14 ou 16 caracteres)">
+    <input type="text" id="winInput" placeholder="Introduz número WIN (14 ou 16 caracteres)" size="40">
     <button onclick="validarWIN()">Validar</button>
-    <button onclick="window.location.href='historico_win.html'">Ver Histórico WIN</button>
+    <button onclick="mostrarHistoricoWIN()">Ver Histórico WIN</button>
     <div id="resultadoWIN"></div>
+    <div id="historicoWIN" class="hidden"></div>
   </div>
 
   <!-- Seção Motor -->
@@ -73,8 +45,9 @@
     </select>
     <div id="camposMotor" style="margin-top:10px;"></div>
     <button onclick="validarMotor()">Validar</button>
-    <button onclick="window.location.href='historico_motor.html'">Ver Histórico Motores</button>
+    <button onclick="mostrarHistoricoMotor()">Ver Histórico Motores</button>
     <div id="resultadoMotor"></div>
+    <div id="historicoMotor" class="hidden"></div>
   </div>
 
   <script>
@@ -82,15 +55,23 @@
       window.location.href = 'login.html';
     }
     function mostrarSecao(sec) {
-      ['secaoWin','secaoMotor'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      ['secaoWin','secaoMotor','historicoWIN','historicoMotor'].forEach(id => document.getElementById(id).classList.add('hidden'));
       if (sec === 'win') document.getElementById('secaoWin').classList.remove('hidden');
       if (sec === 'motor') document.getElementById('secaoMotor').classList.remove('hidden');
     }
 
+    // Histórico WIN
     function salvarHistoricoWIN(win, valido, msg) {
       const h = JSON.parse(localStorage.getItem('hisWIN')||'[]');
       h.unshift({ data: new Date().toLocaleString(), win, valido, msg });
       localStorage.setItem('hisWIN', JSON.stringify(h));
+    }
+    function mostrarHistoricoWIN() {
+      const h = JSON.parse(localStorage.getItem('hisWIN')||'[]');
+      let t = '<table class="feedback-table"><tr><th>Data</th><th>WIN</th><th>Válido</th><th>Mensagem</th></tr>';
+      h.forEach(e => { t += `<tr><td>${e.data}</td><td>${e.win}</td><td>${e.valido}</td><td>${e.msg}</td></tr>`; });
+      t += '</table>';
+      const d = document.getElementById('historicoWIN'); d.innerHTML = t; d.classList.remove('hidden');
     }
 
     function validarNumeroWIN(win) {
@@ -119,7 +100,6 @@
       ];
       return r;
     }
-
     function validarWIN() {
       const w = document.getElementById('winInput').value;
       const res = validarNumeroWIN(w);
@@ -131,12 +111,20 @@
       salvarHistoricoWIN(w, res.valido, res.mensagem);
     }
 
+    // Motor
     const regrasMotor = {
       Yamaha: { regex: /^[A-Z0-9]{8,}$/ },
       Honda: { regex: /^[A-Z0-9]+$/ },
       MercuryIn: { regex: /^[0-9A-Z]{7,8}$/ },
       MercuryOut: { regex: /^[0-3][A-Z][0-9]{6}$/ },
       Suzuki: { regex: /^[A-Z]{2}[0-9]{2,3}[A-Z]*[0-9]{7}$/ }
+    };
+    const infoMotor = {
+      Yamaha: { campos:['Etiqueta'], descricao:'Formato: código+serial', notas:'Sem Jet Drive'},
+      Honda: { campos:['FrameSN','EngineSN'], descricao:'2 etiquetas (transom e bloco)', notas:'Devem coincidir'},
+      MercuryIn: { campos:['TransomSN'], descricao:'Inboard Transom SN', notas:'Obrigatório'},
+      MercuryOut: { campos:['OutboardSN'], descricao:'Outboard SN padrão', notas:'Prefixo 0-3'},
+      Suzuki: { campos:['Etiqueta'], descricao:'DF/DT + 7 dígitos', notas:'Verificar prefixo'}
     };
     function mostrarCamposMotor() {
       const m = document.getElementById('marca').value;
@@ -151,30 +139,72 @@
       }
       document.getElementById('camposMotor').innerHTML = html;
     }
-
     function salvarHistoricoMotor(m, c1, c2, val, msg) {
       const h = JSON.parse(localStorage.getItem('hisMotor')||'[]');
       h.unshift({ data:new Date().toLocaleString(), marca:m, campo1:c1, campo2:c2, valido:val, msg });
       localStorage.setItem('hisMotor', JSON.stringify(h));
     }
-
-    function validarMotor() {
-      const m = document.getElementById('marca').value;
-      const c1 = document.getElementById('campo1')?.value || '';
-      const c2 = document.getElementById('campo2')?.value || '';
-      const regra = regrasMotor[m];
-      let valido = false, msg = 'Marca não suportada ou número inválido.';
-      if (regra && regra.regex.test(c1)) {
-        valido = true;
-        msg = 'Número de motor válido.';
-        if (m==='Honda' && c1 !== c2) {
-          valido = false;
-          msg = 'SN do Frame e do Bloco não coincidem.';
-        }
-      }
-      salvarHistoricoMotor(m, c1, c2, valido, msg);
-      document.getElementById('resultadoMotor').innerHTML = `<p class="${valido?'valido':'invalido'}">${msg}</p>`;
+    function mostrarHistoricoMotor() {
+      const h = JSON.parse(localStorage.getItem('hisMotor')||'[]');
+      let t = '<table class="feedback-table"><tr><th>Data</th><th>Marca</th><th>Campo1</th><th>Campo2</th><th>Válido</th><th>Msg</th></tr>';
+      h.forEach(e=>{ t += `<tr><td>${e.data}</td><td>${e.marca}</td><td>${e.campo1}</td><td>${e.campo2||''}</td><td>${e.valido}</td><td>${e.msg}</td></tr>`; });
+      t += '</table>';
+      const d = document.getElementById('historicoMotor'); d.innerHTML = t; d.classList.remove('hidden');
     }
   </script>
+
+<!-- Motor Interpretation Visual Info -->
+<div id="motorInterpretation" style="display:none; margin-top: 20px;">
+  <h3>Interpretação do Número de Motor</h3>
+  <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+    <thead>
+      <tr>
+        <th>Campo</th>
+        <th>Valor Inserido</th>
+        <th>Interpretação</th>
+      </tr>
+    </thead>
+    <tbody id="motorInterpretationBody">
+      <!-- Conteúdo gerado dinamicamente -->
+    </tbody>
+  </table>
+</div>
+<script>
+  function showMotorInterpretation(marca, dados) {
+    const table = document.getElementById("motorInterpretation");
+    const body = document.getElementById("motorInterpretationBody");
+    body.innerHTML = "";
+
+    if (marca === "Yamaha") {
+      const interpretacao = [
+        { campo: "Modelo", valor: dados.modelo, descricao: "Ex: F350NSA → F350: 350hp, N: América do Norte, S: Long shaft, A: 1ª versão" },
+        { campo: "Código", valor: dados.codigo, descricao: "Código interno Yamaha (ex: 6ML)" },
+        { campo: "Letra Ano", valor: dados.letraAno, descricao: "Ex: N = 2022 (conforme tabela oficial Yamaha)" },
+        { campo: "Nº Série", valor: dados.numeroSerie, descricao: "Número sequencial de produção" }
+      ];
+      interpretacao.forEach(item => {
+        const row = `<tr><td>${item.campo}</td><td>${item.valor}</td><td>${item.descricao}</td></tr>`;
+        body.innerHTML += row;
+      });
+      table.style.display = "block";
+    }
+    else if (marca === "Honda") {
+      const interpretacao = [
+        { campo: "Modelo", valor: dados.modelo, descricao: "Ex: BF90A2 → 90hp, geração A, versão 2" },
+        { campo: "Número de Série", valor: dados.numeroSerie, descricao: "Número de produção interna Honda" },
+        { campo: "Ano Fabrico", valor: dados.ano, descricao: "Ex: M = 2021 (consultar tabela alfabética Honda)" }
+      ];
+      interpretacao.forEach(item => {
+        const row = `<tr><td>${item.campo}</td><td>${item.valor}</td><td>${item.descricao}</td></tr>`;
+        body.innerHTML += row;
+      });
+      table.style.display = "block";
+    }
+    else {
+      table.style.display = "none";
+    }
+  }
+</script>
+
 </body>
 </html>
