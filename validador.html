@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+<script src="js/login.js"></script>
+<script>checkLogin();</script>
     <meta charset="UTF-8">
     <title>Validador de WIN e Motores</title>
     <style>
@@ -62,7 +64,7 @@
         <input type="text" id="inputWin" placeholder="Ex: FR-CNBZA135A612">
         <label for="fotoWin">Fotografia<br><span class="translation">Photo</span></label>
         <input type="file" id="fotoWin">
-        <button onclick="validarWIN()">Validar WIN<br><span class="translation">Validate WIN</span></button>
+        <button onclick="executarValidacaoWIN()">Validar WIN<br><span class="translation">Validate WIN</span></button>
         <div id="resultadoWIN"></div>
     </div>
 
@@ -78,10 +80,64 @@
         <input type="text" id="numeroMotor" placeholder="Ex: 6ML-1005843">
         <label for="fotoMotor">Fotografia<br><span class="translation">Photo</span></label>
         <input type="file" id="fotoMotor">
-        <button onclick="validarMotor()">Validar Motor<br><span class="translation">Validate Engine</span></button>
+        <button onclick="executarValidacaoMotor()">Validar Motor<br><span class="translation">Validate Engine</span></button>
         <div id="resultadoMotor"></div>
     </div>
 
     <script src="js/validador.js"></script>
+
+<script>
+function guardarHistoricoWIN(numero, resultado, interpretacao, fotoURL) {
+    let historico = JSON.parse(localStorage.getItem("historicoWIN")) || [];
+    historico.push({
+        data: new Date().toLocaleString(),
+        win: numero,
+        resultado: resultado,
+        interpretacao: interpretacao,
+        foto: fotoURL || ""
+    });
+    localStorage.setItem("historicoWIN", JSON.stringify(historico));
+}
+
+function guardarHistoricoMotor(marca, numero, resultado, interpretacao, fotoURL) {
+    let historico = JSON.parse(localStorage.getItem("historicoMotor")) || [];
+    historico.push({
+        data: new Date().toLocaleString(),
+        marca: marca,
+        numero: numero,
+        resultado: resultado,
+        interpretacao: interpretacao,
+        foto: fotoURL || ""
+    });
+    localStorage.setItem("historicoMotor", JSON.stringify(historico));
+}
+</script>
+
+
+<script>
+function executarValidacaoWIN() {
+    validarWIN(); // assume que esta função preenche campos com id resultadoWIN e interpretacaoWIN
+    setTimeout(() => {
+        const numero = document.getElementById("winInput")?.value || "";
+        const resultado = document.getElementById("resultadoWIN")?.innerText || "";
+        const interpretacao = document.getElementById("interpretacaoWIN")?.innerText || "";
+        const fotoURL = ""; // poderá ser preenchido com futura integração
+        guardarHistoricoWIN(numero, resultado, interpretacao, fotoURL);
+    }, 500); // delay para garantir que resultado é atualizado
+}
+
+function executarValidacaoMotor() {
+    validarMotor(); // assume que esta função preenche campos com id resultadoMotor e interpretacaoMotor
+    setTimeout(() => {
+        const marca = document.getElementById("motorMarca")?.value || "";
+        const numero = document.getElementById("motorNumero")?.value || "";
+        const resultado = document.getElementById("resultadoMotor")?.innerText || "";
+        const interpretacao = document.getElementById("interpretacaoMotor")?.innerText || "";
+        const fotoURL = ""; // poderá ser preenchido com futura integração
+        guardarHistoricoMotor(marca, numero, resultado, interpretacao, fotoURL);
+    }, 500); // delay para garantir que resultado é atualizado
+}
+</script>
+
 </body>
 </html>
