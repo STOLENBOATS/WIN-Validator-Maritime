@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Validador WIN & Motor</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        label, th, td, button, h1, h2 { font-size: 16px; }
+        em { color: #555; font-size: 13px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        button { margin-top: 10px; padding: 6px 12px; }
+    </style>
+</head>
+<body>
+    <h1>Validador de Número WIN<br><em>WIN Number Validator</em></h1>
+
+    <label for="win"><strong>Número WIN</strong><br><em>WIN Number</em></label><br>
+    <input type="text" id="win" name="win"><br><br>
+
+    <button onclick="validarWIN()"><strong>Validar</strong><br><em>Validate</em></button>
+
+    <h2>Resultado<br><em>Result</em></h2>
+    <table>
+        <thead>
+            <tr>
+                <th><strong>Campo</strong><br><em>Field</em></th>
+                <th><strong>Valor</strong><br><em>Value</em></th>
+                <th><strong>Interpretação</strong><br><em>Interpretation</em></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>País</strong><br><em>Country</em></td>
+                <td>FR</td>
+                <td>🇫🇷 França<br><em>France</em></td>
+            </tr>
+            <tr>
+                <td><strong>Fabricante</strong><br><em>Manufacturer</em></td>
+                <td>CNB</td>
+                <td>CNB Yachts<br><em>CNB Yachts</em></td>
+            </tr>
+            <tr>
+                <td><strong>Série</strong><br><em>Serial</em></td>
+                <td>ZA135</td>
+                <td>Número de registo<br><em>Registration number</em></td>
+            </tr>
+            <tr>
+                <td><strong>Mês</strong><br><em>Month</em></td>
+                <td>A</td>
+                <td>Janeiro<br><em>January</em></td>
+            </tr>
+            <tr>
+                <td><strong>Ano Produção</strong><br><em>Year of Production</em></td>
+                <td>6</td>
+                <td>2006</td>
+            </tr>
+            <tr>
+                <td><strong>Ano Modelo</strong><br><em>Model Year</em></td>
+                <td>12</td>
+                <td>2012</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br><br>
+    <button onclick="voltar()"><strong>Voltar</strong><br><em>Back</em></button>
+
+    <script>
+        function validarWIN() {
+            alert("Validação executada com sucesso. (Exemplo visual)");
+        }
+        function voltar() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
