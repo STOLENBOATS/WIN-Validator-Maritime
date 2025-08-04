@@ -1,1 +1,87 @@
-<!-- Página de login com cabeçalho e logotipo. -->
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - WIN Validator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e8f0fe;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        header {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        header img {
+            height: 60px;
+            opacity: 0.15;
+        }
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #004080;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0059b3;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .translation {
+            font-style: italic;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/logo_pm.png" alt="Logotipo Polícia Marítima">
+    </header>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <label class="label">Utilizador<br><span class="translation">Username</span></label><br>
+        <input type="text" id="username" placeholder="Introduza o utilizador">
+        <label class="label">Palavra-passe<br><span class="translation">Password</span></label><br>
+        <input type="password" id="password" placeholder="Introduza a palavra-passe"><br>
+        <button onclick="login()">Entrar / Login</button>
+        <p id="mensagem" style="color:red;"></p>
+    </div>
+
+    <script>
+        function login() {
+            var u = document.getElementById("username").value;
+            var p = document.getElementById("password").value;
+            if (u === "admin" && p === "Admin2025") {
+                window.location.href = "validador.html";
+            } else {
+                document.getElementById("mensagem").innerText = "Credenciais inválidas / Invalid credentials";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Validador Interpretativo Bilingue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f7;
+            padding: 20px;
+        }
+        header img {
+            height: 50px;
+            opacity: 0.1;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        h1 {
+            color: #003366;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+        label {
+            font-weight: bold;
+        }
+        .translation {
+            font-style: italic;
+            font-size: 11px;
+        }
+        input, select, button {
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+        #resultadoInterpretativo {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/logo_pm.png" alt="Logotipo Polícia Marítima">
+    </header>
+    <h1>Validação Visual Interpretativa<br><span class="translation">Interpretive Visual Validation</span></h1>
+
+    <div class="section">
+        <label for="inputInterpretativo">Introduza o número WIN<br><span class="translation">Enter the WIN number</span></label>
+        <input type="text" id="inputInterpretativo" placeholder="Ex: FR-CNBZA135A612">
+        <button onclick="interpretar()">Interpretar<br><span class="translation">Interpret</span></button>
+
+        <div id="resultadoInterpretativo"></div>
+    </div>
+
+    <script>
+        function interpretar() {
+            const input = document.getElementById("inputInterpretativo").value.trim();
+            const resultado = document.getElementById("resultadoInterpretativo");
+
+            if (!input) {
+                resultado.innerHTML = "<p>Insira um número WIN válido.<br><em>Please enter a valid WIN number.</em></p>";
+                return;
+            }
+
+            // Exemplo visual interpretativo simples (simulação)
+            resultado.innerHTML = `
+                <h3>Interpretação para ${input}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo<br><span class="translation">Field</span></th>
+                            <th>Valor<br><span class="translation">Value</span></th>
+                            <th>Interpretação<br><span class="translation">Interpretation</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>País<br><span class="translation">Country</span></td>
+                            <td>FR</td>
+                            <td>🇫🇷 França</td>
+                        </tr>
+                        <tr>
+                            <td>Fabricante<br><span class="translation">Manufacturer</span></td>
+                            <td>CNB</td>
+                            <td>CNB Yacht Builder</td>
+                        </tr>
+                        <tr>
+                            <td>Série<br><span class="translation">Series</span></td>
+                            <td>ZA135</td>
+                            <td>Número de registo livre<br><em>Free registration number</em></td>
+                        </tr>
+                        <tr>
+                            <td>Mês de Produção<br><span class="translation">Production Month</span></td>
+                            <td>A</td>
+                            <td>Janeiro<br><em>January</em></td>
+                        </tr>
+                        <tr>
+                            <td>Ano de Produção<br><span class="translation">Production Year</span></td>
+                            <td>6</td>
+                            <td>2006</td>
+                        </tr>
+                        <tr>
+                            <td>Ano do Modelo<br><span class="translation">Model Year</span></td>
+                            <td>12</td>
+                            <td>2012</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>
