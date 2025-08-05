@@ -1,143 +1,28 @@
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<script src="js/login.js"></script>
-<script>checkLogin();</script>
-    <meta charset="UTF-8">
-    <title>Validador de WIN e Motores</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #eef2f3;
-            padding: 20px;
-        }
-        header img {
-            height: 50px;
-            opacity: 0.1;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-        }
-        h1 {
-            color: #003366;
-            text-align: center;
-        }
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        }
-        label {
-            font-weight: bold;
-        }
-        .translation {
-            font-style: italic;
-            font-size: 11px;
-        }
-        input, select, button {
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        #resultadoWIN, #resultadoMotor {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-left: 5px solid #388e3c;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <img src="images/logo_pm.png" alt="Logotipo Polícia Marítima">
-    </header>
-    <h1>Validação de Identificação<br><span class="translation">Identification Validation</span></h1>
-
-    <div class="section">
-        <h2>Validador WIN<br><span class="translation">WIN Validator</span></h2>
-        <label for="inputWin">Introduza o número WIN<br><span class="translation">Enter the WIN number</span></label>
-        <input type="text" id="inputWin" placeholder="Ex: FR-CNBZA135A612">
-        <label for="fotoWin">Fotografia<br><span class="translation">Photo</span></label>
-        <input type="file" id="fotoWin">
-        <button onclick="executarValidacaoWIN()">Validar WIN<br><span class="translation">Validate WIN</span></button>
-        <div id="resultadoWIN"></div>
-    </div>
-
-    <div class="section">
-        <h2>Validador de Motores<br><span class="translation">Engine Validator</span></h2>
-        <label for="marcaMotor">Marca<br><span class="translation">Brand</span></label>
-        <select id="marcaMotor">
-            <option value="">-- Selecione uma marca / Select a brand --</option>
-            <option>Yamaha</option>
-            <option>Honda</option>
-        </select>
-        <label for="numeroMotor">Número de Série<br><span class="translation">Serial Number</span></label>
-        <input type="text" id="numeroMotor" placeholder="Ex: 6ML-1005843">
-        <label for="fotoMotor">Fotografia<br><span class="translation">Photo</span></label>
-        <input type="file" id="fotoMotor">
-        <button onclick="executarValidacaoMotor()">Validar Motor<br><span class="translation">Validate Engine</span></button>
-        <div id="resultadoMotor"></div>
-    </div>
-
-    <script src="js/validador.js"></script>
-
+<!-- Inserção dinâmica da interpretação visual dos motores (Yamaha e Honda) -->
 <script>
-function guardarHistoricoWIN(numero, resultado, interpretacao, fotoURL) {
-    let historico = JSON.parse(localStorage.getItem("historicoWIN")) || [];
-    historico.push({
-        data: new Date().toLocaleString(),
-        win: numero,
-        resultado: resultado,
-        interpretacao: interpretacao,
-        foto: fotoURL || ""
-    });
-    localStorage.setItem("historicoWIN", JSON.stringify(historico));
-}
+function mostrarInterpretacaoMotor(marca, modelo, codigo, letraAno, numeroSerie) {
+    const container = document.getElementById("interpretacaoMotor");
+    let html = '<h3>Interpretação Visual do Número do Motor</h3>';
+    html += '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width:100%;">';
+    html += '<tr><th>Campo</th><th>Valor Inserido</th><th>Interpretação</th></tr>';
 
-function guardarHistoricoMotor(marca, numero, resultado, interpretacao, fotoURL) {
-    let historico = JSON.parse(localStorage.getItem("historicoMotor")) || [];
-    historico.push({
-        data: new Date().toLocaleString(),
-        marca: marca,
-        numero: numero,
-        resultado: resultado,
-        interpretacao: interpretacao,
-        foto: fotoURL || ""
-    });
-    localStorage.setItem("historicoMotor", JSON.stringify(historico));
+    if (marca === "Yamaha") {
+        html += `<tr><td>Modelo</td><td>${modelo}</td><td>${modelo} - Ex: F350 = 350hp, S = Long shaft, A = 1ª versão</td></tr>`;
+        html += `<tr><td>Código</td><td>${codigo}</td><td>${codigo} - Código interno Yamaha</td></tr>`;
+        html += `<tr><td>Letra Ano</td><td>${letraAno}</td><td>${letraAno} - Letra corresponde ao ano de fabrico (ver tabela Yamaha)</td></tr>`;
+        html += `<tr><td>Nº Série</td><td>${numeroSerie}</td><td>${numeroSerie} - Número único de produção</td></tr>`;
+    }
+    else if (marca === "Honda") {
+        html += `<tr><td>Modelo</td><td>${modelo}</td><td>${modelo} - Identifica a potência e tipo de motor</td></tr>`;
+        html += `<tr><td>Código</td><td>${codigo}</td><td>${codigo} - Código interno Honda</td></tr>`;
+        html += `<tr><td>Letra Ano</td><td>${letraAno}</td><td>${letraAno} - Letra representa o ano de fabrico (ver tabela Honda)</td></tr>`;
+        html += `<tr><td>Nº Série</td><td>${numeroSerie}</td><td>${numeroSerie} - Produção individual</td></tr>`;
+    }
+    html += '</table>';
+    container.innerHTML = html;
 }
 </script>
 
-
-<script>
-function executarValidacaoWIN() {
-    validarWIN(); // assume que esta função preenche campos com id resultadoWIN e interpretacaoWIN
-    setTimeout(() => {
-        const numero = document.getElementById("winInput")?.value || "";
-        const resultado = document.getElementById("resultadoWIN")?.innerText || "";
-        const interpretacao = document.getElementById("interpretacaoWIN")?.innerText || "";
-        const fotoURL = ""; // poderá ser preenchido com futura integração
-        guardarHistoricoWIN(numero, resultado, interpretacao, fotoURL);
-    }, 500); // delay para garantir que resultado é atualizado
-}
-
-function executarValidacaoMotor() {
-    validarMotor(); // assume que esta função preenche campos com id resultadoMotor e interpretacaoMotor
-    setTimeout(() => {
-        const marca = document.getElementById("motorMarca")?.value || "";
-        const numero = document.getElementById("motorNumero")?.value || "";
-        const resultado = document.getElementById("resultadoMotor")?.innerText || "";
-        const interpretacao = document.getElementById("interpretacaoMotor")?.innerText || "";
-        const fotoURL = ""; // poderá ser preenchido com futura integração
-        guardarHistoricoMotor(marca, numero, resultado, interpretacao, fotoURL);
-    }, 500); // delay para garantir que resultado é atualizado
-}
-</script>
-
-</body>
-</html>
+<!-- Zona onde a interpretação vai aparecer -->
+<div id="interpretacaoMotor" style="margin-top:30px;"></div>
