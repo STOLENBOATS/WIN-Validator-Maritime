@@ -1,1 +1,1 @@
-console.log("Script carregado com sucesso!");
+// JavaScript principal será colocado aqui
