@@ -1,1 +1,90 @@
-<h1>Login</h1><p>Formulário será implementado aqui.</p>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Validador Marítimo</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      text-align: center;
+      color: #002b45;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.25em;
+      font-size: 1em;
+    }
+    button {
+      width: 100%;
+      margin-top: 1.5em;
+      padding: 0.75em;
+      font-size: 1em;
+      background-color: #0073a8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f87;
+    }
+    .mensagem-erro {
+      color: red;
+      margin-top: 1em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+    <label for="username">Utilizador:</label>
+    <input type="text" id="username" placeholder="admin" />
+
+    <label for="password">Palavra-passe:</label>
+    <input type="password" id="password" placeholder="Admin2025" />
+
+    <button onclick="fazerLogin()">Entrar</button>
+    <div id="mensagem" class="mensagem-erro"></div>
+  </div>
+
+  <script>
+    function fazerLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const mensagem = document.getElementById('mensagem');
+
+      if (username === 'admin' && password === 'Admin2025') {
+        localStorage.setItem('loggedInUser', username);
+        window.location.href = 'validador.html';
+      } else {
+        mensagem.textContent = 'Credenciais inválidas. Tente novamente.';
+      }
+    }
+  </script>
+</body>
+</html>
