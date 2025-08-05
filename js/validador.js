@@ -1,0 +1,1 @@
+// JavaScript corrigido será aqui colocado
